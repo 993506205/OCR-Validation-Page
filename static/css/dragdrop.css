@@ -1,0 +1,24 @@
+.container {
+    padding: 30px 10%;
+  }
+  
+  .box {
+    position: relative;
+    background: #ffffff;
+    width: 100%;
+  }
+  
+  .box-header {
+    color: #444;
+    display: block;
+    padding: 10px;
+    position: relative;
+    border-bottom: 1px solid #f4f4f4;
+    margin-bottom: 10px;
+  }
+  
+  .box-tools {
+    position: absolute;
+    right: 10px;
+    top: 5px;
+  }

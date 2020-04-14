@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  | Welcome
+{% endblock title %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+      <div {% if message.tags %}
+        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert"
+      {% endif %}
+        >{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+
+    <section id="showcase">
+    <div class="container text-center">
+      <div class="home-search p-5">
+        <div class="overlay p-5">
+          <h1 class="display-4 mb-4">
+            Files Searching
+          </h1>
+          <p class="lead">Smart OCR /text extraction engine for semi structured documents.</p>
+          <div class="search">
+            <form action="{% url 'search' %}">
+              <!-- Form Row 1 -->
+              <div class="form-row">
+                <div class="col-md-8 mb-5">
+                  <select name="dirProj" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">Directory Project</option>
+                    {% for dir_proj in dir_projs %}
+                        <option value="{{dir_proj.id}}">{{dir_proj.name}}</option>
+                    {% endfor %}
+                  </select>
+                  </div>
+                  <div class="col-md-1 mb-5" title="Create a new Directory Project">
+                    <a href={% url 'createnew' %} class="btn btn-primary"><i class="fa fa-plus"></i> Create</a>
+                  </div>
+
+                </div>
+                <!-- Form Row 2 -->
+                <div class="form-row">
+                <div class="col-md-6 mb-3">
+                  <label class="sr-only">File Name</label>
+                  <input type="text" name="fileName" class="form-control" placeholder="File Name">
+                </div>
+                <div class="col-md-6 mb-3">
+                  <select name="fileType" class="form-control" id="type">
+                    <option selected="true" disabled="disabled">File Type</option>
+                    {% for key, value in type_choices.items %}
+                        <option value="{{key}}">{{value}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+              </div>
+              <button class="btn btn-secondary btn-block mt-4" type="submit">Submit form</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

@@ -1,0 +1,22 @@
+.map-container {
+    background-size: cover;
+    position: relative;
+}
+
+.map-container canvas{
+    position: absolute;
+}
+
+.map-container img{
+    opacity: 0;
+    position: absolute;
+}
+
+.myDiv{
+    margin: 0,0,0,16px;
+}
+
+.myDiv.active{
+    background: #9f9;
+    border: 1px solid #4c4;
+}

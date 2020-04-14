@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+  | OCR Files Listings
+{% endblock title %}
+
+{% block content %}
+
+<section id="bc" class="mt-3">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="{% url 'index' %}">
+              <i class="fas fa-home"></i> Home</a>
+          </li>
+          {% if dir_projs %}
+            <li class="breadcrumb-item">
+              <a href="{% url 'ocrfiles' %}">Browse Ocr Files</a>
+            </li>
+            <li class="breadcrumb-item active"> {{dir_projs.name}}</li>
+          {% else %}
+            <li class="breadcrumb-item active"> Browse Ocr Files</li>
+          {% endif %}
+          
+        </ol>
+      </nav>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="col-md-8 col-lg-12 mb-4">
+      <form action="{% url 'ocrfiles' %}" id="select_form">
+        {% csrf_token %}
+        <select name="project_select" id="dir_projs_id" class="form-control">
+          <option selected="true" disabled="disabled">Select Project</option>
+          {% for dir_proj in dir_select_form %}
+            <option value="{{dir_proj.id}}"
+            {% if dir_projs %}
+              {% if dir_projs.name == dir_proj.name %}
+                selected="true"
+              {% endif %}
+            {% endif %}
+            >{{dir_proj.name}}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <!-- Listings -->
+  <section id="listings" class="py-4">
+    <div class="container">
+      <div class="row">
+
+        {% if ocr_files %}
+          {% for ocr_file in ocr_files %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card listing-preview">
+              {% for conv_image in converted_image %}
+                {% if conv_image.ocrfiles == ocr_file %}
+                  
+                    <div class="col-md-12">
+                        <a href="{{ conv_image.image.url }}" data-lightbox="{{ocr_file.id}}">
+                          {% if conv_image.page_number == 1 %}
+                            <img class="img-fluid" src="{{ conv_image.image.url }}" onerror="this.onerror=null; this.src='{% static 'img/img_not_found.png' %}'" alt="">
+                          {% endif %}
+                        </a>
+                    </div>
+                      <a href="{% url 'ocrfiles' %}{{ ocr_file.id }}/{{ conv_image.page_number }} ">
+                      <i class="listing-heading text-center">{{ ocr_file.file_name }}
+                      {% if conv_image.page_number != 1 %}
+                        Page {{ conv_image.page_number }}
+                      {% endif %}
+                      </i>
+                      </a>
+                  {% endif %}
+                {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+          <div class="col-md-12">
+            <p>No Files Available</p>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          {% if ocr_files.has_other_pages %}
+            <ul class="pagination">
+              {% if ocr_files.has_previous %}
+                <li class="page-item">
+                  <a href="?page={{ocr_files.previous_page_number}}" class="page-link">&laquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link">&laquo;</a>
+                </li>
+              {% endif %}
+              {% for i in ocr_files.paginator.page_range %}
+                {% if ocr_files.number == i %}
+                  <li class="page-item active">
+                    <a class="page-link">{{i}}</a>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a href="?page={{i}}" class="page-link">{{i}}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+              {% if ocr_files.has_next %}
+                <li class="page-item">
+                  <a href="?page={{ocr_files.next_page_number}}" class="page-link">&raquo;</a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <a class="page-link">&raquo;</a>
+                </li>
+              {% endif %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+  $(function(){
+    $('#dir_projs_id').change(function(){
+        $('#select_form').submit();
+    });
+  });
+  </script>
+{% endblock %}
+
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'css/file.css' %}">
+{% endblock extrastyle %}

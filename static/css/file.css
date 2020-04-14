@@ -1,0 +1,7 @@
+.img_hover a p{
+  display: none;
+}
+
+.img_hover a:hover p{
+  display: block;
+}
