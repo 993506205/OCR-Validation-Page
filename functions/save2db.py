@@ -18,6 +18,8 @@ def create_ocrfiles(file_list, username, pk):
     Ocr_save_img = OcrConvertedImage()
     Ocr_save_file = Ocrfiles()
 
+    dir_id = str(pk)
+
     dirproject_obj = DirProject.objects.get(pk=pk)
     dir_name = dirproject_obj.name
 
@@ -35,8 +37,8 @@ def create_ocrfiles(file_list, username, pk):
                 # file_name=f_name).first()
             Ocr_save_file.scanned_file.save(
                 f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
             os.rename(Ocr_save_file.scanned_file.path, new_path)
             Ocr_save_file = Ocrfiles(id=Ocr_save_file.id, file_name=f_name, file_extension=f_ext, file_size=f_size, upload_date=current, scanned_file=new_path, dir_project=dirproject_obj)
             Ocr_save_file.save()
@@ -49,7 +51,7 @@ def create_ocrfiles(file_list, username, pk):
         if f_ext == 'pdf':
 
             # convert pdf to images and save to dir and return new image path
-            pdf2img(f_name, ocr_path, ocrObject, dir_name)
+            pdf2img(f_name, ocr_path, ocrObject, dir_name, dir_id)
 
         # if extention is image's extention
         elif f_ext == 'jpg' or f_ext == 'jpeg' or f_ext == 'png':
@@ -57,8 +59,8 @@ def create_ocrfiles(file_list, username, pk):
             # set forigen key for converted_img
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=1, image=new_path)
@@ -67,7 +69,7 @@ def create_ocrfiles(file_list, username, pk):
 # Convert pdf file to img file(s)
 
 
-def pdf2img(file_name, ocr_path, ocrObject, dir_name):
+def pdf2img(file_name, ocr_path, ocrObject, dir_name, dir_id):
     pdf_file = fitz.open(ocr_path, filetype="pdf")
     pdf_name = file_name
     temp_path = os.path.abspath(os.getcwd()) + r"\temp"
@@ -92,8 +94,8 @@ def pdf2img(file_name, ocr_path, ocrObject, dir_name):
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(
                 f_name, File(f_save))
-            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=page_num, image=new_path)
