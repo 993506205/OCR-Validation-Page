@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from dirprojects.models import DirProject
 from ocrfiles.models import Ocrfiles
 from datetime import datetime
+from django.shortcuts import render, get_object_or_404
+import json
 
 
 def register(request):
@@ -69,6 +71,16 @@ def logout(request):
 
 
 def dashboard(request):
+    try:
+        if request.method == 'POST':
+            data = json.loads(request.body)
+            dir_id = data['dir_id']
+            dir_delete = get_object_or_404(DirProject, id=dir_id)
+            dir_delete.delete()
+            messages.success(request, 'Successful Delete!')
+    except Exception as e:
+        messages.error(request, 'The Project could not be delete: Error {}'.format(e))  
+
     date_now = datetime.now()
     formatedDate =date_now.strftime('%d %b %Y')
     if DirProject.objects.filter(creator_id=request.user.id).exists():
