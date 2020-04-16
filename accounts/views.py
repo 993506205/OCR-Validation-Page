@@ -6,6 +6,7 @@ from ocrfiles.models import Ocrfiles
 from datetime import datetime
 from django.shortcuts import render, get_object_or_404
 import json
+from functions import emptyDirClean
 
 
 def register(request):
@@ -74,10 +75,20 @@ def dashboard(request):
     try:
         if request.method == 'POST':
             data = json.loads(request.body)
-            dir_id = data['dir_id']
-            dir_delete = get_object_or_404(DirProject, id=dir_id)
-            dir_delete.delete()
-            messages.success(request, 'Successful Delete!')
+            func_type = data['type']
+            if func_type == "delete":
+                dir_id = data['dir_id']
+                dir_delete = get_object_or_404(DirProject, id=dir_id)
+                dir_delete.delete()
+                messages.success(request, 'Successful Delete!')
+
+                # clean empty dirs
+                emptyDirClean.deleteDirs()
+            elif func_type == "edit":
+                dir_id = data['dir_id']
+                dir_name = data['dir_name']
+                dir_des = data['dir_des']
+                DirProject.objects.filter(id=dir_id).update(name=dir_name, description=dir_des)
     except Exception as e:
         messages.error(request, 'The Project could not be delete: Error {}'.format(e))  
 

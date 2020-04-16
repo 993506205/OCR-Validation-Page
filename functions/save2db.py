@@ -5,7 +5,7 @@ from ocrfiles.models import Ocrfiles, OcrConvertedImage
 from validations.models import Validation
 from django.core.files import File
 from datetime import datetime
-from . import tesseract_ocr
+from . import tesseract_ocr, emptyDirClean
 from django.conf import settings
 from dirprojects.models import DirProject
 
@@ -65,6 +65,9 @@ def create_ocrfiles(file_list, username, pk):
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=1, image=new_path)
             Ocr_save_img.save()
+
+    # Delete empty dirs after save to models
+    emptyDirClean.deleteDirs()
 
 # Convert pdf file to img file(s)
 
