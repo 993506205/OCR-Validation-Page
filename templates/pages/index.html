@@ -6,15 +6,7 @@
 
 {% block content %}
 
-{% if messages %}
-    {% for message in messages %}
-      <div {% if message.tags %}
-        class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %}" role="alert"
-      {% endif %}
-        >{{ message }}</div>
-    {% endfor %}
-{% endif %}
-
+{% include 'partials/_alerts.html' %}
 
     <section id="showcase">
     <div class="container text-center">

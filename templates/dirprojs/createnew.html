@@ -8,6 +8,7 @@
 
 {% block content %}
 
+{% include 'partials/_alerts.html' %}
 
 <p class="text-center h4 mb-4 p-2">Create a new Directory Project</p>
 
@@ -39,6 +40,7 @@
 
   <div class="form-group">
     <div class="col-lg-10" style="margin: 20px 0;">
+      <p id="redirect" style="display:none" value="{% url 'index' %}"></p>
       <button id="button" type="submit" class="btn btn-primary">Create</button>
       </div>
   </div>

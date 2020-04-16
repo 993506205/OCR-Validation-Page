@@ -3837,6 +3837,7 @@ Dropzone.options.myDropzone = {
     autoProcessQueue: false,
     dictDefaultMessage: 'Upload your files here',
     uploadMultiple: true,
+    parallelUploads: 30,
     init:function(){
       var self = this;
 
@@ -3882,9 +3883,9 @@ Dropzone.options.myDropzone = {
         console.log(file);
       });
 
-      self.on("success", function(){
+      self.on("success", function(file, responseText){
         if (self.getUploadingFiles().length === 0 && self.getQueuedFiles().length === 0) {
-          window.location.href = "#";
+          window.location.replace(responseText.url);
         }
       });
     },
