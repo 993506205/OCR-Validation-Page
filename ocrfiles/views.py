@@ -47,12 +47,13 @@ def validation(request, ocr_id, page_number):
 
 def index(request):
     if DirProject.objects.filter(creator_id=request.user.id).exists() and request.user.is_authenticated:
-        dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
         if 'project_select' in request.GET:
             id = request.GET['project_select']
             dir_projs = DirProject.objects.filter(id=id).first()
+        else:
+            dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
     
-        dir_select_form = DirProject.objects.filter(creator_id=request.user.id)
+        dir_select_form = DirProject.objects.filter(creator_id=request.user.id).order_by('id')
 
         ocr_files = Ocrfiles.objects.filter(dir_project=dir_projs)
 

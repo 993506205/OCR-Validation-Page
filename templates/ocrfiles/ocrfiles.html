@@ -38,7 +38,7 @@
           {% for dir_proj in dir_select_form %}
             <option value="{{dir_proj.id}}"
             {% if dir_projs %}
-              {% if dir_projs.name == dir_proj.name %}
+              {% if dir_projs.id == dir_proj.id %}
                 selected="true"
               {% endif %}
             {% endif %}
