@@ -87,15 +87,15 @@ class Tesseract_ocr:
         image = cv2.imread(img_path)
 
         # convert image to grayscale
-        # gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         # Check to see if we should apply thresholding to preprocess the image
-        # if preprocess == "thresh":
-            # gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+        if preprocess == "thresh":
+            gray = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
 
         # check to see if median blurring should be done to remove noise
-        # elif preprocess == "blur":
-            # gray = cv2.medianBlur(gray, 3)
+        elif preprocess == "blur":
+            gray = cv2.medianBlur(gray, 3)
             
         temp_path = os.path.abspath(os.getcwd()) + r'\temp'
         if not os.path.exists(temp_path):
@@ -103,7 +103,7 @@ class Tesseract_ocr:
         # write the grayscale image to disk as a temporary file so we can
         # apply OCR to it
         filename = os.path.abspath(os.getcwd()) + r"\temp\{}.png".format(os.getpid())
-        cv2.imwrite(filename, image)
+        cv2.imwrite(filename, gray)
 
         img_gray = cv2.imread(filename)
 
@@ -112,8 +112,8 @@ class Tesseract_ocr:
 
         # get image height and width
         (w, h) = Image.open(filename).size
-        newW = 640*2# round(w/32)*32
-        newH = 640*2# round(h/32)*32
+        newW = 320*5# round(w/32)*32
+        newH = 320*5# round(h/32)*32
 
         # set the new width and heigh and then determine the ratio in change
         # for both the width and heigh
@@ -199,5 +199,7 @@ class Tesseract_ocr:
             # add the bounding box coordinates and OCR'd text to the list
             # of results
             results.append(((p_startX, p_startY, p_endX, p_endY), text))
+        
+        results = sorted(results, key=lambda r: r[0][1])
 
         return results

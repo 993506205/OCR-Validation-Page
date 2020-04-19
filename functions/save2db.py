@@ -1,14 +1,18 @@
 import os
+import sys
+from io import BytesIO
 import fitz
 import shutil
+from datetime import datetime
+from PIL import Image
+from django.core.files import File
+from django.conf import settings
+from django.core.files.uploadedfile import InMemoryUploadedFile
+from dirprojects.models import DirProject
+from . import tesseract_ocr, emptyDirClean
 from ocrfiles.models import Ocrfiles, OcrConvertedImage
 from validations.models import Validation
-from django.core.files import File
-from datetime import datetime
-from . import tesseract_ocr, emptyDirClean
-from django.conf import settings
-from dirprojects.models import DirProject
-
+from . import emptyDirClean
 
 # insert files properties into db
 def create_ocrfiles(file_list, username, pk):
@@ -116,9 +120,13 @@ def create_validation(ocrfileObj, pageNumber):
         ocrfiles=ocrfileObj, page_number=pageNumber, is_exist=True).first()
     if validation_obj is None:
         converted_img = OcrConvertedImage.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber).first()
-        t_ocr = tesseract_ocr.Tesseract_ocr(img_path=converted_img.image.path, preprocess='thresh', min_confidence=0.5, padding=0.2)
+        t_ocr = tesseract_ocr.Tesseract_ocr(img_path=converted_img.image.path, preprocess='thresh', min_confidence=0.4, padding=0.05)
         results = []
         results = t_ocr.start_ocr()
+
+        all_endY = []
+        all_startY = []
+
         for ((startX, startY, endX, endY), text) in results:
             if text == "":
                 continue
@@ -126,6 +134,58 @@ def create_validation(ocrfileObj, pageNumber):
                 v = Validation(ocrfiles=ocrfileObj, page_number=pageNumber, get_text=text, startX=startX, endX=endX, startY=startY, endY=endY,
                 correction_rate=0, is_correct=False, feedback_text='', is_exist=True)
                 v.save()
+                all_endY.append(endY)
+                all_startY.append(startY)
+        
+        # Crop image
+        text_image = Image.open(converted_img.image.path)
+        origW, origH = text_image.size
+        f_name = converted_img.image_name
+
+        crop_height_b = max(all_endY) * origH + 30
+        crop_height_t = min(all_startY) * origH - 30
+        crop_height = crop_height_b - crop_height_t
+
+        if(crop_height < 300):
+            crop_height = 300
+            crop_height_b = crop_height_t + crop_height
+
+        crop_image = text_image.crop((0, crop_height_t, origW, crop_height_b))
+
+        for v in Validation.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber):
+            startY = v.startY
+            endY = v.endY
+
+            v.startY = (origH * startY - crop_height_t) / crop_height
+            v.endY = (origH * endY - crop_height_t) / crop_height
+            v.save()
+
+        # Create a file-like object to write crop_image data (crop_image data previously created
+        # using PIL, and stored in variable 'crop_image')
+        crop_image_io = BytesIO()
+        crop_image.save(crop_image_io, format='JPEG')
+        crop_image_io.seek(0)
+        
+        # Create a new Django file-like object to be used in models as ImageField using
+        # InMemoryUploadedFile.  If you look at the source in Django, a
+        # SimpleUploadedFile is essentially instantiated similarly to what is shown here
+        crop_file = InMemoryUploadedFile(crop_image_io, 'ImageField', f_name, 'image/jpeg',
+                                        sys.getsizeof(crop_image_io), None)
+
+        # Get Dir Project by ocrfileObj
+        dirproject_obj = ocrfileObj.dir_project
+        dir_name = dirproject_obj.name
+        dir_id = dirproject_obj.id
+        converted_img.textRegion_image.save(
+            f_name, File(crop_file))
+        f_name = converted_img.image_name
+        new_path = settings.MEDIA_ROOT + r"\Ocr_TextRegion_images\\" + dir_name + "_" + str(dir_id) + r"\\" + f_name
+        os.makedirs(settings.MEDIA_ROOT + r"\Ocr_TextRegion_images\\" + dir_name + "_" + str(dir_id) + r"\\", exist_ok=True)
+        os.rename(converted_img.textRegion_image.path, new_path)
+        converted_img.textRegion_image.name = new_path
+        converted_img.save()
+
     temp_path = os.path.abspath(os.getcwd()) + r"\temp"
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
+    emptyDirClean.deleteDirs()

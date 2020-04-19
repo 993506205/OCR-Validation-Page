@@ -23,6 +23,10 @@ class OcrConvertedImage(models.Model):
         Ocrfiles, related_name='converted_image', on_delete=models.CASCADE)
     image = models.ImageField(
         upload_to='Ocr_files/Ocr_Converted_files/%Y/%m/', null=True)
+    
+    textRegion_image = models.FileField(
+        upload_to='Ocr_files/Ocr_TextRegion_images/%Y/%m/', null=True
+    )
 
     def __str__(self):
         return self.image_name
