@@ -33,6 +33,11 @@
               <img src="{{ conv_image.textRegion_image.url }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
               <map name="image-map" >
                 <area id="myArea" alt="" href="#" coords="" shape="rect">
+                {% if validation_text %}
+                    {% for text in validation_text %}
+                      <area id="area{{ text.id }}" alt="" href="#" coords="" shape="rect"  onclick="mapMouseClick(this)"></area>
+                    {% endfor %}
+                  {% endif %}
               </map>
             </div>
             <div class="card-block px-2">
@@ -42,7 +47,7 @@
                 <ul class="list-group list-group-flush">
                   {% if validation_text %}
                     {% for text in validation_text %}
-                      <input type="text" class="list-group-item" id="{{ text.id }}" name="{{ text.id }}" onmouseover="coordsTransIn(this)" onmouseout="coordsTransOut(this)" value="{{text.get_text}}"></input>
+                      <input type="text" class="list-group-item" id="text{{ text.id }}" name="{{ text.id }}" onmouseover="coordsTransIn(this)" onmouseout="coordsTransOut(this)" value="{{text.get_text}}"></input>
                     {% endfor %}
                   {% endif %}
                 </ul>
@@ -61,6 +66,29 @@
 <script type="text/javascript">
 window.onload = function(){
   $('#textMap').maphilight();
+  var myimg = document.getElementById("textMap");
+  var realH = myimg.height;
+  var realW = myimg.width;
+
+  {% for text in validation_text %}
+    var id = {{ text.id }}
+    var startX = {{ text.startX }} * realW;
+    var startY = {{ text.startY }} * realH;
+    var endX = {{ text.endX }} * realW;
+    var endY = {{ text.endY }} * realH;
+    result = startX + "," + startY + "," + endX + "," + endY;
+    document.getElementById("area" + id).setAttribute("coords",result);
+    $('#area'+id).maphilight();
+    $('#text' + id).mouseover();
+    $('#text' + id).mouseout();
+  {% endfor %}
+}
+
+
+function mapMouseClick(x){
+  var id = x.id.replace("area", "");
+
+  $('#text' + id).trigger("focus");
 }
 
 $(document).ready(function(){
@@ -95,7 +123,7 @@ function coordsTransIn(x){
   document.getElementById('scrollbar').style.width = cardW + "px";
 
   {% for text in validation_text %}
-    if({{ text.id }} == x.id){
+    if({{ text.id }} == x.id.replace("text", "")){
       var startX = {{ text.startX }} * realW;
       var startY = {{ text.startY }} * realH;
       var endX = {{ text.endX }} * realW;

@@ -155,7 +155,12 @@ def create_validation(ocrfileObj, pageNumber):
         for v in Validation.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber):
             startY = v.startY
             endY = v.endY
-
+            startX = v.startX
+            endX = v.endX
+            
+            # adjust the X axis.
+            v.startX = startX - 0.01
+            v.endX = endX - 0.01
             v.startY = (origH * startY - crop_height_t) / crop_height
             v.endY = (origH * endY - crop_height_t) / crop_height
             v.save()
