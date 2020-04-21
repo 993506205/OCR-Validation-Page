@@ -120,7 +120,7 @@ def create_validation(ocrfileObj, pageNumber):
         ocrfiles=ocrfileObj, page_number=pageNumber, is_exist=True).first()
     if validation_obj is None:
         converted_img = OcrConvertedImage.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber).first()
-        t_ocr = tesseract_ocr.Tesseract_ocr(img_path=converted_img.image.path, preprocess='thresh', min_confidence=0.4, padding=0.05)
+        t_ocr = tesseract_ocr.Tesseract_ocr(img_path=converted_img.image.path, preprocess='thresh', min_confidence=0.4)
         results = []
         results = t_ocr.start_ocr()
 
@@ -139,7 +139,10 @@ def create_validation(ocrfileObj, pageNumber):
         
         # Crop image
         text_image = Image.open(converted_img.image.path)
-        origW, origH = text_image.size
+        # convert RGBA image to RGB type avoid crop error
+        text_rgb_image = text_image.convert('RGB')
+        origW, origH = text_rgb_image.size
+        # get file name
         f_name = converted_img.image_name
 
         crop_height_b = max(all_endY) * origH + 30
@@ -150,17 +153,12 @@ def create_validation(ocrfileObj, pageNumber):
             crop_height = 300
             crop_height_b = crop_height_t + crop_height
 
-        crop_image = text_image.crop((0, crop_height_t, origW, crop_height_b))
+        crop_image = text_rgb_image.crop((0, crop_height_t, origW, crop_height_b))
 
         for v in Validation.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber):
             startY = v.startY
             endY = v.endY
-            startX = v.startX
-            endX = v.endX
-            
-            # adjust the X axis.
-            v.startX = startX - 0.01
-            v.endX = endX - 0.01
+
             v.startY = (origH * startY - crop_height_t) / crop_height
             v.endY = (origH * endY - crop_height_t) / crop_height
             v.save()

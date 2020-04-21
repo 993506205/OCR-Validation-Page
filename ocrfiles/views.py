@@ -32,7 +32,7 @@ def validation(request, ocr_id, page_number):
 
     create_validation(ocr_files, page_number)
     
-    validation_text = validation_models.objects.filter(ocrfiles=ocr_files, page_number=page_number).order_by('startY', 'startX')
+    validation_text = validation_models.objects.filter(ocrfiles=ocr_files, page_number=page_number)
     text_len = len(validation_text)
     context = {
         'ocr_id': ocr_id,
