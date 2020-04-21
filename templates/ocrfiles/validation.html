@@ -112,7 +112,7 @@ function mapMouseClick(x){
 $(document).ready(function(){
     $(".list-group-item").on('change', function postinput(){
         var changedValue = $(this).val();
-        var validation_id = this.id;
+        var validation_id = this.id.replace("text","");
         var token = '{{csrf_token}}';
         var ocr_id = {{ocr_id}};
         var page_number = {{page_number}};
