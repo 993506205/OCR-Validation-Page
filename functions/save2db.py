@@ -126,6 +126,8 @@ def create_validation(ocrfileObj, pageNumber):
 
         all_endY = []
         all_startY = []
+        all_endX = []
+        all_startX = []
 
         for ((startX, startY, endX, endY), text) in results:
             if text == "":
@@ -136,6 +138,8 @@ def create_validation(ocrfileObj, pageNumber):
                 v.save()
                 all_endY.append(endY)
                 all_startY.append(startY)
+                all_endX.append(endX)
+                all_startX.append(startX)
         
         # Crop image
         text_image = Image.open(converted_img.image.path)
@@ -147,20 +151,27 @@ def create_validation(ocrfileObj, pageNumber):
 
         crop_height_b = max(all_endY) * origH + 30
         crop_height_t = min(all_startY) * origH - 30
+        crop_width_r = max(all_endX) * origW + 30
+        crop_width_l = min(all_startX) * origW - 30
         crop_height = crop_height_b - crop_height_t
+        crop_width = crop_width_r - crop_width_l
 
-        if(crop_height < 300):
-            crop_height = 300
+        if(crop_height < crop_width - 200):
+            crop_height = crop_width - 150
             crop_height_b = crop_height_t + crop_height
 
-        crop_image = text_rgb_image.crop((0, crop_height_t, origW, crop_height_b))
+        crop_image = text_rgb_image.crop((crop_width_l, crop_height_t, crop_width_r, crop_height_b))
 
         for v in Validation.objects.filter(ocrfiles=ocrfileObj, page_number=pageNumber):
             startY = v.startY
             endY = v.endY
+            startX = v.startX
+            endX = v.endX
 
             v.startY = (origH * startY - crop_height_t) / crop_height
             v.endY = (origH * endY - crop_height_t) / crop_height
+            v.startX = (origW * startX - crop_width_l) / crop_width
+            v.endX = (origW * endX - crop_width_l) / crop_width
             v.save()
 
         # Create a file-like object to write crop_image data (crop_image data previously created

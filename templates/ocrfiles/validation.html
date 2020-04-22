@@ -146,7 +146,8 @@ function coordsTransIn(x){
       var startY = {{ text.startY }} * realH;
       var endX = {{ text.endX }} * realW;
       var endY = {{ text.endY }} * realH;
-      result = startX + "," + startY + "," + endX + "," + endY;  
+      result = startX + "," + startY + "," + endX + "," + endY;
+      console.log(result);  
     }
   {% endfor %}
   x.setAttribute("style", "background-color: red; opacity: 0.6; border-radius: 3px");

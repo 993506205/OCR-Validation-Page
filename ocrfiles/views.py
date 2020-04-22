@@ -73,7 +73,7 @@ def index(request):
         }
         return render(request, 'ocrfiles/ocrfiles.html', context=context)
     else:
-        html = "<h1>Please Create Project Directory First!</h1>"
+        html = "<h1>Please Create Project Directory or Login to your account</h1>"
         html += "<button onclick='goBack()'>Go Back</button><script>function goBack() {window.history.back();}</script>"
         return HttpResponse(html)
 
