@@ -62,6 +62,7 @@ class Tesseract_ocr:
         for i in range(n_boxes):
             # get text data
             text = d['text'][i]
+            conf = d['conf'][i]
             # get text position data
             (x, y, w, h) = (d['left'][i], d['top'][i], d['width'][i], d['height'][i])
 
@@ -71,6 +72,10 @@ class Tesseract_ocr:
             ratio_ex = (x + w) / origW
             ratio_ey = (y + h) / origH
 
-            if text != "":  
-                results.append(((ratio_sx, ratio_sy, ratio_ex, ratio_ey), text))
+            diff_w = origW - w
+            diff_h = origH - h
+
+            if diff_w > 5 and diff_h > 5:
+                if text != "" and conf != -1:  
+                    results.append(((ratio_sx, ratio_sy, ratio_ex, ratio_ey), text))
         return results
