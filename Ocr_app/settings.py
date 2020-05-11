@@ -90,6 +90,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'ocr_db',
+        'USER': 'root',
+        'PASSWORD': 'rootpassword',
     }
 }
 
