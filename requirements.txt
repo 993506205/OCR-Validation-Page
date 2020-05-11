@@ -22,6 +22,7 @@ EbookLib==0.17.1
 etelemetry==0.1.2
 extract-msg==0.23.1
 filelock==3.0.12
+fitz==0.0.1.dev2
 httplib2==0.17.0
 idna==2.9
 IMAPClient==2.1.0
@@ -67,7 +68,6 @@ sortedcontainers==2.1.0
 soupsieve==2.0
 SpeechRecognition==3.8.1
 sqlparse==0.2.4
-textract==1.6.3
 traits==6.0.0
 tzlocal==1.5.1
 urllib3==1.25.8
