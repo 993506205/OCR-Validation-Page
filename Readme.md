@@ -1,11 +1,13 @@
 # OCR VALIDATION PROJECT
 
-## EXECUTE THE DJANGO PROJECT
+This is a OCR validation web page project as my thesis project.
 
-### VIRTUAL ENVIROMENT
-```
-.\venv\Script\active
-```
+## Getting Started
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+
+### Creating VIRTUAL ENVIROMENT
+Run [startup.sh](startup.sh) for creating virtualenv and installing needed modules.
 
 ### RUN SERVER
 ```
