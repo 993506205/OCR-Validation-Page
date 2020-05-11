@@ -35,7 +35,6 @@ pytesseract==0.3.2
 python-pptx==0.6.18
 sortedcontainers==2.1.0
 soupsieve==2.0
-SpeechRecognition==3.8.1
 sqlparse==0.2.4
 tzlocal==1.5.1
 wrapt==1.11.2
