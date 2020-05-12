@@ -53,7 +53,6 @@ def create_ocrfiles(file_list, username, pk):
         ocr_path = ocrObject.scanned_file.path
         # if file extention is pdf
         if f_ext == 'pdf':
-
             # convert pdf to images and save to dir and return new image path
             pdf2img(f_name, ocr_path, ocrObject, dir_name, dir_id)
 
@@ -77,12 +76,13 @@ def create_ocrfiles(file_list, username, pk):
 
 
 def pdf2img(file_name, ocr_path, ocrObject, dir_name, dir_id):
-    pdf_file = fitz.open(ocr_path, filetype="pdf")
+    pdf_file = fitz.Document(ocr_path)
     pdf_name = file_name
-    temp_path = os.path.abspath(os.getcwd()) + r"\temp"
+    temp_path = settings.MEDIA_ROOT + r"\\temp"
+    
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
-    os.mkdir(temp_path)
+    os.makedirs(temp_path)
     for pg in range(pdf_file.pageCount):
         page = pdf_file[pg]
         rotate = int(0)
