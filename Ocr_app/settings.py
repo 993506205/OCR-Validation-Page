@@ -90,8 +90,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'ocr_db',
-        'USER': 'root',
-        'PASSWORD': 'rootpassword',
+        'CLIENT': {
+            'host': 'mongo',
+            'username': 'admin',
+            'password': 'admin',
+            'authSource': 'admin'
+        }
     }
 }
 
