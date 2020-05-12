@@ -19,7 +19,7 @@ Setup the project using following command,
 ```
 docker-compose up --build -d
 ```
-### Store MongoDB data on Host System
+### Store MongoDB data
 
 The Database is only saved in container, inside `/data/da`. Shut dwon the MongoDB `mongo` services will clean all the data.
 
