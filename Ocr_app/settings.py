@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'ocrfiles.context_processors.getvars',
+                'django.template.context_processors.media',
             ],
         },
     },

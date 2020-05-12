@@ -62,9 +62,9 @@
                 {% if conv_image.ocrfiles == ocr_file %}
                   
                     <div class="col-md-12">
-                        <a href="{{ conv_image.image.url }}" data-lightbox="{{ocr_file.id}}">
+                        <a href="{{ MEDIA_URL }}{{ conv_image.image.name }}" data-lightbox="{{ocr_file.id}}">
                           {% if conv_image.page_number == 1 %}
-                            <img class="img-fluid" src="{{ conv_image.image.url }}" onerror="this.onerror=null; this.src='{% static 'img/img_not_found.png' %}'" alt="">
+                            <img class="img-fluid" src="{{ MEDIA_URL }}{{ conv_image.image.name }}" onerror="this.onerror=null; this.src='{% static 'img/img_not_found.png' %}'" alt="">
                           {% endif %}
                         </a>
                     </div>

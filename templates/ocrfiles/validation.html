@@ -30,7 +30,7 @@
 
           <div class="card flex-row flex-wrap">
             <div class="card-header border-0" style="width: 30rem;">
-              <img src="{{ conv_image.textRegion_image.url }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
+              <img src="{{ MEDIA_URL }}{{ conv_image.textRegion_image.name }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
               <map name="image-map" >
                 <area id="myArea" alt="" href="#" coords="" shape="rect">
                 {% if validation_text %}

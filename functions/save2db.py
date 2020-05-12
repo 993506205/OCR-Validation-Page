@@ -41,10 +41,11 @@ def create_ocrfiles(file_list, username, pk):
                 # file_name=f_name).first()
             Ocr_save_file.scanned_file.save(
                 f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"/Ocr_Scanned_files/" + dir_name + "_" + dir_id + r"/" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Scanned_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
+            new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_Scanned_files", dir_name, dir_id, f_name)
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, "Ocr_Scanned_files", dir_name, dir_id), exist_ok=True)
             os.rename(Ocr_save_file.scanned_file.path, new_path)
-            Ocr_save_file = Ocrfiles(id=Ocr_save_file.id, file_name=f_name, file_extension=f_ext, file_size=f_size, upload_date=current, scanned_file=new_path, dir_project=dirproject_obj)
+            Ocr_save_file = Ocrfiles(id=Ocr_save_file.id, file_name=f_name, file_extension=f_ext, file_size=f_size, upload_date=current,scanned_file=new_path, dir_project=dirproject_obj)
+            Ocr_save_file.scanned_file.name = os.path.join("Ocr_Scanned_files", dir_name, dir_id, f_name)
             Ocr_save_file.save()
 
         # get just created row of ocr_files
@@ -62,11 +63,13 @@ def create_ocrfiles(file_list, username, pk):
             # set forigen key for converted_img
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
+
+            new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_Converted_files", dir_name, dir_id, f_name)
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, "Ocr_Converted_files", dir_name, dir_id), exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
-                id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=1, image=new_path)
+                id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=1, image=new_path)            
+            Ocr_save_img.image.name =  os.path.join("Ocr_Converted_files", dir_name, dir_id, f_name)
             Ocr_save_img.save()
 
     # Delete empty dirs after save to models
@@ -101,11 +104,13 @@ def pdf2img(file_name, ocr_path, ocrObject, dir_name, dir_id):
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(
                 f_name, File(f_save))
-            new_path = settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
+
+            new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_Converted_files", dir_name, dir_id, f_name)
+            os.makedirs(os.path.join(settings.MEDIA_ROOT, "Ocr_Converted_files", dir_name, dir_id), exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=page_num, image=new_path)
+            Ocr_save_img.image.name =  os.path.join("Ocr_Converted_files", dir_name, dir_id, f_name)
             Ocr_save_img.save()
         f_save.closed
     if os.path.exists(temp_path):
@@ -193,10 +198,10 @@ def create_validation(ocrfileObj, pageNumber):
         converted_img.textRegion_image.save(
             f_name, File(crop_file))
         f_name = converted_img.image_name
-        new_path = settings.MEDIA_ROOT + r"/Ocr_TextRegion_images/" + dir_name + "_" + str(dir_id) + r"/" + f_name
-        os.makedirs(settings.MEDIA_ROOT + r"/Ocr_TextRegion_images/" + dir_name + "_" + str(dir_id) + r"/", exist_ok=True)
+        new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_TextRegion_images", dir_name, str(dir_id), f_name)
+        os.makedirs(os.path.join(settings.MEDIA_ROOT, "Ocr_TextRegion_images", dir_name, str(dir_id)), exist_ok=True)       
         os.rename(converted_img.textRegion_image.path, new_path)
-        converted_img.textRegion_image.name = new_path
+        converted_img.textRegion_image.name =  os.path.join("Ocr_TextRegion_images", dir_name, str(dir_id), f_name)
         converted_img.save()
 
     temp_path = os.path.abspath(os.getcwd()) + r"/temp"
