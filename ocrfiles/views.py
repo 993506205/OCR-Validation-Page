@@ -65,6 +65,7 @@ def index(request):
         page = request.GET.get('page')
         paged_ocrfiles = paginator.get_page(page)
 
+
         context = {
             'ocr_files': paged_ocrfiles,
             'converted_image': converted_image,

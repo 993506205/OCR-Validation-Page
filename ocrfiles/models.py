@@ -9,6 +9,7 @@ class Ocrfiles(models.Model):
     upload_date = models.DateField(default=datetime.now, blank=True)
     file_size = models.FloatField()
 
+    scanned_file_url = models.CharField(max_length=250, default='')
     scanned_file = models.FileField(
         upload_to='Ocr_files/Ocr_Scanned_files/%Y/%m/', null=True)
 
@@ -21,9 +22,11 @@ class OcrConvertedImage(models.Model):
     page_number = models.IntegerField(default=0)
     ocrfiles = models.ForeignKey(
         Ocrfiles, related_name='converted_image', on_delete=models.CASCADE)
+    image_url = models.CharField(max_length=250, default='')
     image = models.ImageField(
         upload_to='Ocr_files/Ocr_Converted_files/%Y/%m/', null=True)
     
+    textRegion_image_url =  models.CharField(max_length=250, default='')
     textRegion_image = models.FileField(
         upload_to='Ocr_files/Ocr_TextRegion_images/%Y/%m/', null=True
     )

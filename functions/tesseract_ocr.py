@@ -6,6 +6,8 @@ import pytesseract
 import cv2
 import os
 import math
+from sys import platform
+
 
 # Create class
 class Tesseract_ocr:
@@ -16,8 +18,9 @@ class Tesseract_ocr:
 
     
     def start_ocr(self):
-        # set the tesseract path in the script before calling
-        pytesseract.pytesseract.tesseract_cmd = os.path.abspath(os.getcwd()) + r'/Tesseract-OCR/tesseract.exe'
+        if platform == "win32":
+            # set the tesseract path in the script before calling
+            pytesseract.pytesseract.tesseract_cmd = os.path.abspath(os.getcwd()) + r'/Tesseract-OCR/tesseract.exe'
 
         #------------------------------------------------------------------
         # image path
