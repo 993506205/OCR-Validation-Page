@@ -6,25 +6,45 @@ This is a OCR validation web page project as my thesis project.
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
 
-### Creating VIRTUAL ENVIROMENT
-Run [startup.sh](startup.sh) for creating virtualenv and installing needed modules.
+## Requirements
 
-### RUN SERVER
-On Windows, it is needed to activate your virtualenv first.
-```
-.env/Scripts/activate
-```
-Start your server
-```
-python manage.py runserver
-```
+This thesis project requires:
 
-### BROWSE LOCALHOST (IE > 8.0)
-```
-http://127.0.0.1:8000/
-```
+* [Docker](https://www.docker.com/get-started)
 
-## Create superuser for django project
+## Installation
+
+Setup the project using following command,
+
 ```
-python manage.py createsuperuser
+docker-compose up --build -d
 ```
+### Store MongoDB data on Host System
+
+The Database is only saved in container, inside `/data/da`. Shut dwon the MongoDB `mongo` services will clean all the data.
+
+### Django database migration automatically at beginning.
+
+The services `make-migration` amd `migration` runs after setting up the database when `docker up` the project.
+
+### Django Web Project
+
+The main page of the thesis project is at [http://localhost:8000/].
+
+### MongoDB admin interface
+
+This project contains a web-base interface for MongoDB which is [mongo-express](http://github.com/mongo-express/mongo-express) at port 8081.
+
+## Functions of the Project
+
+### Create a user account
+
+User needs to create an account for using the validation functions.
+
+### Create a Directory Project Folder for files
+
+
+
+## Reference
+
+This Dockerlization method is learning from [balanpradeepkumar's github](https://github.com/balanpradeepkumar/docker_django_mongodb).
