@@ -43,7 +43,11 @@ User needs to create an account for using the validation functions.
 
 ### Create a Directory Project Folder for files
 
+Click the `Create` button on home page and select the files for Recognition.
 
+### Click the file for recognition
+
+In `OCR FILES LISTING` page, click image's name link under image for OCR validation. User can fix the Wrong OCR text fields in `Validation` text listing (There will be Parameters Correction for training tesseract in the future).
 
 ## Reference
 
