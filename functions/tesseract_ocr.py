@@ -17,7 +17,7 @@ class Tesseract_ocr:
     
     def start_ocr(self):
         # set the tesseract path in the script before calling
-        pytesseract.pytesseract.tesseract_cmd = os.path.abspath(os.getcwd()) + r'\Tesseract-OCR\tesseract.exe'
+        pytesseract.pytesseract.tesseract_cmd = os.path.abspath(os.getcwd()) + r'/Tesseract-OCR/tesseract.exe'
 
         #------------------------------------------------------------------
         # image path
@@ -38,12 +38,12 @@ class Tesseract_ocr:
         elif preprocess == "blur":
             gray = cv2.medianBlur(gray, 3)
             
-        temp_path = os.path.abspath(os.getcwd()) + r'\temp'
+        temp_path = os.path.abspath(os.getcwd()) + r'/temp'
         if not os.path.exists(temp_path):
             os.makedirs(temp_path)
         # write the grayscale image to disk as a temporary file so we can
         # apply OCR to it
-        filename = os.path.abspath(os.getcwd()) + r"\temp\{}.png".format(os.getpid())
+        filename = os.path.abspath(os.getcwd()) + r"/temp/{}.png".format(os.getpid())
         cv2.imwrite(filename, gray)
 
         img_gray = cv2.imread(filename)

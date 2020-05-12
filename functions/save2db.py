@@ -41,8 +41,8 @@ def create_ocrfiles(file_list, username, pk):
                 # file_name=f_name).first()
             Ocr_save_file.scanned_file.save(
                 f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\Ocr_Scanned_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"/Ocr_Scanned_files/" + dir_name + "_" + dir_id + r"/" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Scanned_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
             os.rename(Ocr_save_file.scanned_file.path, new_path)
             Ocr_save_file = Ocrfiles(id=Ocr_save_file.id, file_name=f_name, file_extension=f_ext, file_size=f_size, upload_date=current, scanned_file=new_path, dir_project=dirproject_obj)
             Ocr_save_file.save()
@@ -62,8 +62,8 @@ def create_ocrfiles(file_list, username, pk):
             # set forigen key for converted_img
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(f_name, File(f))
-            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=1, image=new_path)
@@ -78,7 +78,7 @@ def create_ocrfiles(file_list, username, pk):
 def pdf2img(file_name, ocr_path, ocrObject, dir_name, dir_id):
     pdf_file = fitz.Document(ocr_path)
     pdf_name = file_name
-    temp_path = settings.MEDIA_ROOT + r"\\temp"
+    temp_path = settings.MEDIA_ROOT + r"/temp"
     
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
@@ -101,8 +101,8 @@ def pdf2img(file_name, ocr_path, ocrObject, dir_name, dir_id):
             Ocr_save_img = OcrConvertedImage()
             Ocr_save_img.image.save(
                 f_name, File(f_save))
-            new_path = settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\" + f_name
-            os.makedirs(settings.MEDIA_ROOT + r"\\Ocr_Converted_files\\" + dir_name + "_" + dir_id + r"\\", exist_ok=True)
+            new_path = settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/" + f_name
+            os.makedirs(settings.MEDIA_ROOT + r"/Ocr_Converted_files/" + dir_name + "_" + dir_id + r"/", exist_ok=True)
             os.rename(Ocr_save_img.image.path, new_path)
             Ocr_save_img = OcrConvertedImage(
                 id=Ocr_save_img.id, image_name=f_name, ocrfiles=ocrObject, page_number=page_num, image=new_path)
@@ -193,13 +193,13 @@ def create_validation(ocrfileObj, pageNumber):
         converted_img.textRegion_image.save(
             f_name, File(crop_file))
         f_name = converted_img.image_name
-        new_path = settings.MEDIA_ROOT + r"\Ocr_TextRegion_images\\" + dir_name + "_" + str(dir_id) + r"\\" + f_name
-        os.makedirs(settings.MEDIA_ROOT + r"\Ocr_TextRegion_images\\" + dir_name + "_" + str(dir_id) + r"\\", exist_ok=True)
+        new_path = settings.MEDIA_ROOT + r"/Ocr_TextRegion_images/" + dir_name + "_" + str(dir_id) + r"/" + f_name
+        os.makedirs(settings.MEDIA_ROOT + r"/Ocr_TextRegion_images/" + dir_name + "_" + str(dir_id) + r"/", exist_ok=True)
         os.rename(converted_img.textRegion_image.path, new_path)
         converted_img.textRegion_image.name = new_path
         converted_img.save()
 
-    temp_path = os.path.abspath(os.getcwd()) + r"\temp"
+    temp_path = os.path.abspath(os.getcwd()) + r"/temp"
     if os.path.exists(temp_path):
         shutil.rmtree(temp_path)
     emptyDirClean.deleteDirs()
