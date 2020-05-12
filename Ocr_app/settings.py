@@ -92,8 +92,8 @@ DATABASES = {
         'NAME': 'ocr_db',
         'CLIENT': {
             'host': 'mongo',
-            'username': 'admin',
-            'password': 'admin',
+            'username': 'root',
+            'password': 'root',
             'authSource': 'admin'
         }
     }
