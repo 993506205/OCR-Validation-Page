@@ -38,7 +38,7 @@
           {% for dir_proj in dir_select_form %}
             <option value="{{dir_proj.id}}"
             {% if dir_projs %}
-              {% if dir_projs.name == dir_proj.name %}
+              {% if dir_projs.id == dir_proj.id %}
                 selected="true"
               {% endif %}
             {% endif %}
@@ -93,7 +93,7 @@
             <ul class="pagination">
               {% if ocr_files.has_previous %}
                 <li class="page-item">
-                  <a href="?page={{ocr_files.previous_page_number}}" class="page-link">&laquo;</a>
+                  <a href="?page={{ocr_files.previous_page_number}}{{ getvars }}" class="page-link">&laquo;</a>
                 </li>
               {% else %}
                 <li class="page-item disabled">
@@ -107,13 +107,13 @@
                   </li>
                 {% else %}
                   <li class="page-item">
-                    <a href="?page={{i}}" class="page-link">{{i}}</a>
+                    <a href="?page={{i}}{{ getvars }}" class="page-link">{{i}}</a>
                   </li>
                 {% endif %}
               {% endfor %}
               {% if ocr_files.has_next %}
                 <li class="page-item">
-                  <a href="?page={{ocr_files.next_page_number}}" class="page-link">&raquo;</a>
+                  <a href="?page={{ocr_files.next_page_number}}{{ getvars }}" class="page-link">&raquo;</a>
                 </li>
               {% else %}
                 <li class="page-item disabled">

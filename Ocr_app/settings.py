@@ -74,6 +74,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'ocrfiles.context_processors.getvars',
             ],
         },
     },
@@ -89,6 +90,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'NAME': 'ocr_db',
+        'CLIENT': {
+            'host': 'mongo',
+            'username': 'root',
+            'password': 'root',
+            'authSource': 'admin'
+        }
     }
 }
 

@@ -30,9 +30,14 @@
 
           <div class="card flex-row flex-wrap">
             <div class="card-header border-0" style="width: 30rem;">
-              <img src="{{ conv_image.image.url }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
+              <img src="{{ conv_image.textRegion_image.url }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
               <map name="image-map" >
                 <area id="myArea" alt="" href="#" coords="" shape="rect">
+                {% if validation_text %}
+                    {% for text in validation_text %}
+                      <area id="area{{ text.id }}" alt="" href="#" coords="" shape="rect"  onclick="mapMouseClick(this)"></area>
+                    {% endfor %}
+                  {% endif %}
               </map>
             </div>
             <div class="card-block px-2">
@@ -42,12 +47,15 @@
                 <ul class="list-group list-group-flush">
                   {% if validation_text %}
                     {% for text in validation_text %}
-                      <input type="text" class="list-group-item" id="{{ text.id }}" name="{{ text.id }}" onmouseover="coordsTransIn(this)" onmouseout="coordsTransOut(this)" value="{{text.get_text}}"></input>
+                      <input type="text" class="list-group-item" id="text{{ text.id }}" name="{{ text.id }}" onmouseover="coordsTransIn(this)" onmouseout="coordsTransOut(this)" value="{{text.get_text}}"></input>
                     {% endfor %}
                   {% endif %}
                 </ul>
               </div>
             </div>
+            </div>
+            <div class="float-right" title="Copy all to clipboard">
+              <button onclick="myFunction()" class="btn btn-outline-info"></i> Copy All</button>
             </div>
           </div>
       {% endfor %}
@@ -56,17 +64,55 @@
         <p>No Files Available</p>
       </div>
     {% endif %}
+    <textarea id='copy' style="display: none"></textarea>
 
 <script src="{% static 'js/jquery.maphilight.js' %}"></script>
 <script type="text/javascript">
 window.onload = function(){
   $('#textMap').maphilight();
+  var myimg = document.getElementById("textMap");
+  var realH = myimg.height;
+  var realW = myimg.width;
+
+  {% for text in validation_text %}
+    var id = {{ text.id }}
+    var startX = {{ text.startX }} * realW;
+    var startY = {{ text.startY }} * realH;
+    var endX = {{ text.endX }} * realW;
+    var endY = {{ text.endY }} * realH;
+    result = startX + "," + startY + "," + endX + "," + endY;
+    document.getElementById("area" + id).setAttribute("coords",result);
+    $('#area'+id).maphilight();
+    $('#text' + id).mouseover();
+    $('#text' + id).mouseout();
+  {% endfor %}
+}
+
+function myFunction(){
+  var text = "";
+  var id;
+  {% for text in validation_text %}
+    id = {{ text.id }}
+    text = text.concat(document.getElementById("text" + id).value, " ");
+  {% endfor %}
+  document.getElementById("copy").setAttribute("value", text);
+  $("#copy").show().val(text)[0].select();
+  document.execCommand("copy");
+  $("#copy").hide();
+  alert("Copied successfully!")
+}
+
+
+function mapMouseClick(x){
+  var id = x.id.replace("area", "");
+
+  $('#text' + id).trigger("focus");
 }
 
 $(document).ready(function(){
     $(".list-group-item").on('change', function postinput(){
         var changedValue = $(this).val();
-        var validation_id = this.id;
+        var validation_id = this.id.replace("text","");
         var token = '{{csrf_token}}';
         var ocr_id = {{ocr_id}};
         var page_number = {{page_number}};
@@ -95,12 +141,13 @@ function coordsTransIn(x){
   document.getElementById('scrollbar').style.width = cardW + "px";
 
   {% for text in validation_text %}
-    if({{ text.id }} == x.id){
+    if({{ text.id }} == x.id.replace("text", "")){
       var startX = {{ text.startX }} * realW;
       var startY = {{ text.startY }} * realH;
       var endX = {{ text.endX }} * realW;
       var endY = {{ text.endY }} * realH;
-      result = startX + "," + startY + "," + endX + "," + endY;  
+      result = startX + "," + startY + "," + endX + "," + endY;
+      console.log(result);  
     }
   {% endfor %}
   x.setAttribute("style", "background-color: red; opacity: 0.6; border-radius: 3px");

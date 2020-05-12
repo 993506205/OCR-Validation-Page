@@ -39,40 +39,88 @@
     <div class="bs-docs-header" id="content" tabindex="-1"></div>
       <div class="container"> 
         <div class="col-md-12">
+          <div class="float-right" title="Create a new Directory Project">
+            <a href={% url 'createnew' %} class="btn btn-outline-info"><i class="fa fa-plus"></i> Create</a>
+          </div>
           <h2>Welcome {% if user.is_authenticated %}{{ user.username }}{% endif %}</h2>
-          
-          <table class="table">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Description</th>
-              <th></th>      
-            </tr>
-          </thead>
-          <tbody>
           {% if dir_project %}
 
             {% for dir in dir_project %}
-              <tr>
-                <td>{{ dir.name }}</td>
-                <td>{{ dir.description }}</td>
-                <td>
-                  <a class="btn btn-light" href="#">View Project</a>
-                </td>
-              </tr>
+              <div class="card border-info mb-3" id="card{{ dir.id }}">
+                <div class="card-header">Project ID: {{ dir.id }}</div>
+                <div class="card-body">
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">Name</span>
+                    </div>
+                    <div class="col-xs-2">
+                      <input id="name{{ dir.id }}" type="text" class="form-control" value="{{ dir.name }}">
+                    </div>
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">Description</span>
+                    </div>
+                    <input id="des{{ dir.id }}" type="text" class="form-control" value="{{ dir.description }}">
+                    <div class="input-group-append">
+                    <button id="edit{{ dir.id }}" class="btn btn-sm btn-secondary" type="button" onclick="UpdatePro(this)">Update</button>
+                    <button id="delete{{ dir.id }}" class="btn btn-sm btn-danger" type="button" onclick="DeletePro(this)">Delete</button> 
+                    </div>
+                  </div> 
+                </div>
+              </div>
             {% endfor %}
           
           {% endif %}
-          </tbody>
-        </table>
         <br>
         <small class="text-muted">Last Login: {% if user.is_authenticated %}{{ user.last_login|naturaltime }}{% endif %}</small>
-        
-        
         </div>
       </div>
     </div>
   </section>
+
+<script type="text/javascript">
+  function DeletePro(x){
+    var token = '{{csrf_token}}';
+    var dir_id = x.id.replace("delete", "");
+    var r = confirm("Are you sure to delete?");
+    if(r == true){
+      $.ajax({ 
+            headers: { "X-CSRFToken": token },
+            url: '{% url 'dashboard' %}',
+            data: JSON.stringify({ type: "delete", dir_id: dir_id }),
+            type: 'POST',
+            contentType : 'application/json',
+        }).done(function(responseData) {
+            $('#card'+dir_id).fadeOut(700);
+            setTimeout(function(){
+              $('#card'+dir_id).load('{% url 'dashboard' %} #card'+dir_id)
+            }, 700);
+            console.log('Done');
+        }).fail(function() {
+            console.log('Failed');
+        });
+    }
+  }
+
+  function UpdatePro(x){
+    var token = '{{csrf_token}}';
+    var dir_id = x.id.replace("edit", "");
+    var dir_name = $("#name"+dir_id).val();
+    var dir_des = $("#des"+dir_id).val();
+
+    $.ajax({ 
+            headers: { "X-CSRFToken": token },
+            url: '{% url 'dashboard' %}',
+            data: JSON.stringify({ type: "edit", dir_id: dir_id, dir_name: dir_name, dir_des: dir_des }),
+            type: 'POST',
+            contentType : 'application/json',
+        }).done(function(responseData) {
+            $('#card'+dir_id).fadeOut(700).fadeIn(500);
+            console.log('Done');
+        }).fail(function() {
+            console.log('Failed');
+        });
+  }
+</script>
 
 {% endblock content %}
 

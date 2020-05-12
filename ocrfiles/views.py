@@ -32,7 +32,7 @@ def validation(request, ocr_id, page_number):
 
     create_validation(ocr_files, page_number)
     
-    validation_text = validation_models.objects.filter(ocrfiles=ocr_files, page_number=page_number).order_by('startY', 'startX')
+    validation_text = validation_models.objects.filter(ocrfiles=ocr_files, page_number=page_number)
     text_len = len(validation_text)
     context = {
         'ocr_id': ocr_id,
@@ -47,12 +47,13 @@ def validation(request, ocr_id, page_number):
 
 def index(request):
     if DirProject.objects.filter(creator_id=request.user.id).exists() and request.user.is_authenticated:
-        dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
         if 'project_select' in request.GET:
             id = request.GET['project_select']
             dir_projs = DirProject.objects.filter(id=id).first()
+        else:
+            dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
     
-        dir_select_form = DirProject.objects.filter(creator_id=request.user.id)
+        dir_select_form = DirProject.objects.filter(creator_id=request.user.id).order_by('id')
 
         ocr_files = Ocrfiles.objects.filter(dir_project=dir_projs)
 
@@ -72,7 +73,7 @@ def index(request):
         }
         return render(request, 'ocrfiles/ocrfiles.html', context=context)
     else:
-        html = "<h1>Please Create Project Directory First!</h1>"
+        html = "<h1>Please Create Project Directory or Login to your account</h1>"
         html += "<button onclick='goBack()'>Go Back</button><script>function goBack() {window.history.back();}</script>"
         return HttpResponse(html)
 
