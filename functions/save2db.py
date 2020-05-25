@@ -138,7 +138,7 @@ def create_validation(ocrfileObj, pageNumber):
         all_startX = []
 
         for ((startX, startY, endX, endY), text) in results:
-            if text == "":
+            if text == "" and text.isspace():
                 continue
             else:
                 v = Validation(ocrfiles=ocrfileObj, page_number=pageNumber, get_text=text, startX=startX, endX=endX, startY=startY, endY=endY,
@@ -149,6 +149,7 @@ def create_validation(ocrfileObj, pageNumber):
                 all_endX.append(endX)
                 all_startX.append(startX)
         
+        
         # Crop image
         text_image = Image.open(converted_img.image.path)
         # convert RGBA image to RGB type avoid crop error
@@ -157,16 +158,20 @@ def create_validation(ocrfileObj, pageNumber):
         # get file name
         f_name = converted_img.image_name
 
-        crop_height_b = max(all_endY) * origH + 30
-        crop_height_t = min(all_startY) * origH - 30
-        crop_width_r = max(all_endX) * origW + 30
-        crop_width_l = min(all_startX) * origW - 30
+        if not all_endY or not all_startY or not all_endX or not all_startX:
+            crop_height_b = origH
+            crop_height_t = 0
+            crop_width_r = origW
+            crop_width_l = 0
+        else:
+            crop_height_b = max(all_endY)  * origH
+            crop_height_t = min(all_startY) * origH
+            crop_width_r = max(all_endX) * origW
+            crop_width_l = min(all_startX) * origW
+            
         crop_height = crop_height_b - crop_height_t
         crop_width = crop_width_r - crop_width_l
 
-        if(crop_height < crop_width - 200):
-            crop_height = crop_width - 150
-            crop_height_b = crop_height_t + crop_height
 
         crop_image = text_rgb_image.crop((crop_width_l, crop_height_t, crop_width_r, crop_height_b))
 

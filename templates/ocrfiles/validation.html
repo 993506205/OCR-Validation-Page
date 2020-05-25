@@ -28,8 +28,8 @@
     {% if converted_image %}
       {% for conv_image in converted_image %}
 
-          <div class="card flex-row flex-wrap">
-            <div class="card-header border-0" style="width: 30rem;">
+          <div id="card_board" class="card flex-row flex-wrap">
+            <div class="card-header border-0" >
               <img src="{{ MEDIA_URL }}{{ conv_image.textRegion_image_url }}" alt="" class="rounded img-thumbnail card-img-top" usemap="#image-map" id="textMap">
               <map name="image-map" >
                 <area id="myArea" alt="" href="#" coords="" shape="rect">
@@ -41,7 +41,7 @@
               </map>
             </div>
             <div class="card-block px-2">
-              <h4 class="card-title text-center" style="margin-left: 20px;">Validation Here </h4>
+              <h4 class="card-title text-center" style="margin-left: 20px;">Validation</h4>
               <div class="wrapper">
               <div class="scrollbar scrollbar-primary" id="scrollbar">
                 <ul class="list-group list-group-flush">
@@ -49,13 +49,15 @@
                     {% for text in validation_text %}
                       <input type="text" class="list-group-item" id="text{{ text.id }}" name="{{ text.id }}" onmouseover="coordsTransIn(this)" onmouseout="coordsTransOut(this)" value="{{text.get_text}}"></input>
                     {% endfor %}
+                    {% else %}
+                      <span class="label label-warning">No text recognized!</span>
                   {% endif %}
                 </ul>
               </div>
             </div>
             </div>
             <div class="float-right" title="Copy all to clipboard">
-              <button onclick="myFunction()" class="btn btn-outline-info"></i> Copy All</button>
+              <button onclick="CopyAll()" class="btn btn-outline-info"></i> Copy All</button>
             </div>
           </div>
       {% endfor %}
@@ -68,11 +70,16 @@
 
 <script src="{% static 'js/jquery.maphilight.js' %}"></script>
 <script type="text/javascript">
+
 window.onload = function(){
   $('#textMap').maphilight();
   var myimg = document.getElementById("textMap");
   var realH = myimg.height;
   var realW = myimg.width;
+
+  var card_board = document.querySelector('#card_board');
+  var cardW = realW + 300;
+  card_board.style.width = cardW + "px";
 
   {% for text in validation_text %}
     var id = {{ text.id }}
@@ -88,7 +95,7 @@ window.onload = function(){
   {% endfor %}
 }
 
-function myFunction(){
+function CopyAll(){
   var text = "";
   var id;
   {% for text in validation_text %}
@@ -168,6 +175,6 @@ function coordsTransOut(x){
 
 
 {% block extrastyle %}
-  <link rel="stylesheet" href="{% static 'css/validation.css' %}"
+  <link rel="stylesheet" href="{% static 'css/validation.css' %}">
   <link rel="stylesheet" href="{% static 'css/highlight.css' %}">
 {% endblock extrastyle %}
