@@ -2,8 +2,7 @@ import sys
 import os
 import operator
 import json
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404, redirect
 from functions.save2db import create_ocrfiles, create_validation
 from ocrfiles.choices import type_choices
 from .models import Ocrfiles, OcrConvertedImage
@@ -13,6 +12,7 @@ from validations.models import Validation as validation_models
 from dirprojects.models import DirProject
 from django.contrib.auth.models import User
 from functools import reduce
+from django.contrib import messages
 # from win32com import client
 
 
@@ -46,37 +46,40 @@ def validation(request, ocr_id, page_number):
 
 
 def index(request):
-    if DirProject.objects.filter(creator_id=request.user.id).exists() and request.user.is_authenticated:
-        if 'project_select' in request.GET:
-            id = request.GET['project_select']
-            dir_projs = DirProject.objects.filter(id=id).first()
+    if  request.user.is_authenticated:
+        if DirProject.objects.filter(creator_id=request.user.id).exists():
+            if 'project_select' in request.GET:
+                id = request.GET['project_select']
+                dir_projs = DirProject.objects.filter(id=id).first()
+            else:
+                dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
+        
+            dir_select_form = DirProject.objects.filter(creator_id=request.user.id).order_by('id')
+
+            ocr_files = Ocrfiles.objects.filter(dir_project=dir_projs)
+
+            ocr_object = (Q(ocrfiles=ocr_file) for ocr_file in ocr_files)
+            converted_image = OcrConvertedImage.objects.filter(reduce(operator.or_, ocr_object)).order_by('page_number').distinct()
+
+            # add paginator
+            paginator = Paginator(ocr_files, 12)
+            page = request.GET.get('page')
+            paged_ocrfiles = paginator.get_page(page)
+
+
+            context = {
+                'ocr_files': paged_ocrfiles,
+                'converted_image': converted_image,
+                'dir_select_form': dir_select_form,
+                'dir_projs': dir_projs
+            }
+            return render(request, 'ocrfiles/ocrfiles.html', context=context)
         else:
-            dir_projs = DirProject.objects.filter(creator_id=request.user.id).latest('id')
-    
-        dir_select_form = DirProject.objects.filter(creator_id=request.user.id).order_by('id')
-
-        ocr_files = Ocrfiles.objects.filter(dir_project=dir_projs)
-
-        ocr_object = (Q(ocrfiles=ocr_file) for ocr_file in ocr_files)
-        converted_image = OcrConvertedImage.objects.filter(reduce(operator.or_, ocr_object)).order_by('page_number').distinct()
-
-        # add paginator
-        paginator = Paginator(ocr_files, 12)
-        page = request.GET.get('page')
-        paged_ocrfiles = paginator.get_page(page)
-
-
-        context = {
-            'ocr_files': paged_ocrfiles,
-            'converted_image': converted_image,
-            'dir_select_form': dir_select_form,
-            'dir_projs': dir_projs
-        }
-        return render(request, 'ocrfiles/ocrfiles.html', context=context)
+            messages.error(request, 'Please Create Project Directory First!')
+            return redirect('index')
     else:
-        html = "<h1>Please Create Project Directory or Login to your account</h1>"
-        html += "<button onclick='goBack()'>Go Back</button><script>function goBack() {window.history.back();}</script>"
-        return HttpResponse(html)
+        messages.error(request, 'Please login First!')
+        return redirect('index')
 
 def search(request):
     ocr_files = Ocrfiles.objects.all()

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% load humanize %}
 
 {% block title %}
@@ -47,7 +47,9 @@
 
             {% for dir in dir_project %}
               <div class="card border-info mb-3" id="card{{ dir.id }}">
-                <div class="card-header">Project ID: {{ dir.id }}</div>
+                <div class="card-header">Project ID: 
+                  <a href = "{% url 'search' %}?dirProj={{ dir.id }}" onclick="this.closest('form').submit();return false;">{{ dir.id }}</a>
+                </div>
                 <div class="card-body">
                   <div class="input-group">
                     <div class="input-group-prepend">
