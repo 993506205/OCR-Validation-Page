@@ -17,7 +17,6 @@ from django.contrib.auth.models import User
 from functools import reduce
 from django.contrib import messages
 
-
 def index(request):
     # check if login
     if not request.user.is_authenticated:
@@ -58,12 +57,7 @@ def index(request):
         'dir_select_form': dir_select_form,
         'dir_projs': dir_projs
     }
-    
-    return render(request, 'ocrfiles/ocrfiles.html', context=context)
-    # else:
-    #     html = "<h1>Please Create Project Directory or Login to your account</h1>"
-    #     html += "<button onclick='goBack()'>Go Back</button><script>function goBack() {window.history.back();}</script>"
-    #     return HttpResponse(html)
+    return render(request, 'ocrfiles/validation.html', context=context)
 
 def search(request):
     # check if login

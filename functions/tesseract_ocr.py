@@ -138,7 +138,7 @@ class Tesseract_ocr:
         origH = d['height'][0]
 
         for i in range(n_boxes):
-            if int(d['conf'][i]) > 60:
+            if int(d['conf'][i]) > 40:
                 # get text data
                 text = d['text'][i]
                 conf = d['conf'][i]

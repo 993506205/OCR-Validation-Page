@@ -189,6 +189,9 @@ def create_validation(ocrfileObj, pageNumber):
         crop_height = crop_height_b - crop_height_t
         crop_width = crop_width_r - crop_width_l
 
+        if crop_height < 150:
+            crop_height = 150
+            crop_height_b = crop_height + crop_height_t
 
         crop_image = text_rgb_image.crop((crop_width_l, crop_height_t, crop_width_r, crop_height_b))
 
