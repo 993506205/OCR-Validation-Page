@@ -57,7 +57,7 @@ def index(request):
         'dir_select_form': dir_select_form,
         'dir_projs': dir_projs
     }
-    return render(request, 'ocrfiles/validation.html', context=context)
+    return render(request, 'ocrfiles/ocrfiles.html', context=context)
 
 def search(request):
     # check if login
