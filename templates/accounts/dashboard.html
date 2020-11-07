@@ -40,26 +40,24 @@
       <div class="container"> 
         <div class="col-md-12">
           <div class="float-right" title="Create a new Directory Project">
-            <a href={% url 'createnew' %} class="btn btn-outline-info"><i class="fa fa-plus"></i> Create</a>
+            <a href="{% url 'createnew' %}" class="btn btn-outline-info"><i class="fa fa-plus"></i> Create</a>
           </div>
           <h2>Welcome {% if user.is_authenticated %}{{ user.username }}{% endif %}</h2>
           {% if dir_project %}
 
             {% for dir in dir_project %}
               <div class="card border-info mb-3" id="card{{ dir.id }}">
-                <div class="card-header">Project ID: {{ dir.id }}</div>
+                <div class="card-header">Project ID: <a href="{% url 'ocrfiles' %}?project_select={{ dir.id }}" style="color:  #17a2b8;">{{ dir.id }}</a></div>
                 <div class="card-body">
                   <div class="input-group">
                     <div class="input-group-prepend">
                       <span class="input-group-text">Name</span>
                     </div>
-                    <div class="col-xs-2">
-                      <input id="name{{ dir.id }}" type="text" class="form-control" value="{{ dir.name }}">
-                    </div>
+                      <input id="name{{ dir.id }}" type="text" class="form-control" value="{{ dir.name }}" title="{{ dir.name }}" />
                     <div class="input-group-prepend">
                       <span class="input-group-text">Description</span>
                     </div>
-                    <input id="des{{ dir.id }}" type="text" class="form-control" value="{{ dir.description }}">
+                    <input id="des{{ dir.id }}" type="text" class="form-control" value="{{ dir.description }}" title="{{ dir.description }}" />
                     <div class="input-group-append">
                     <button id="edit{{ dir.id }}" class="btn btn-sm btn-secondary" type="button" onclick="UpdatePro(this)">Update</button>
                     <button id="delete{{ dir.id }}" class="btn btn-sm btn-danger" type="button" onclick="DeletePro(this)">Delete</button> 

@@ -30,7 +30,7 @@
   </section>
 
   <div class="container">
-    <div class="col-md-8 col-lg-12 mb-4">
+    <div class="col-md-12 col-lg-12 mb-4">
       <form action="{% url 'ocrfiles' %}" id="select_form">
         {% csrf_token %}
         <select name="project_select" id="dir_projs_id" class="form-control">
@@ -56,36 +56,90 @@
 
         {% if ocr_files %}
           {% for ocr_file in ocr_files %}
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-md-6 col-lg-4 mb-4" id="fileCard{{ ocr_file.id }}">
               <div class="card listing-preview">
               {% for conv_image in converted_image %}
                 {% if conv_image.ocrfiles == ocr_file %}
                   
-                    <div class="col-md-12">
+                    <div class="col-md-12 col-lg-12">
                         <a href="{{ MEDIA_URL }}{{ conv_image.image_url }}" data-lightbox="{{ocr_file.id}}">
                           {% if conv_image.page_number == 1 %}
-                            <img class="img-fluid" src="{{ MEDIA_URL }}{{ conv_image.image_url }}" onerror="this.onerror=null; this.src='{% static 'img/img_not_found.png' %}'" alt="">
+                            <img class="img-fluid mt-2 rounded border border-primary" src="{{ MEDIA_URL }}{{ conv_image.image_url }}" onerror="this.onerror=null; this.src='{% static 'img/img_not_found.png' %}'" alt="">
                           {% endif %}
                         </a>
                     </div>
-                      <a href="{% url 'ocrfiles' %}{{ ocr_file.id }}/{{ conv_image.page_number }} ">
+                  <hr/>
+                    <div>
+                      <a href="{% url 'ocrfiles' %}{{ ocr_file.id }}/{{ conv_image.page_number }} " class="ml-1">
                       <i class="listing-heading text-center">{{ ocr_file.file_name }}
                       {% if conv_image.page_number != 1 %}
                         Page {{ conv_image.page_number }}
                       {% endif %}
-                      </i>
-                      </a>
+                      </i></a>
+                      <div class="float-right" title="Delete the file">
+                        <button onclick="DeleteFile(this)" id="delete{{ ocr_file.id }}" class="btn mr-1 mb-1"><i class="fa fa-trash"></i></button>
+                      </div>
+                    </div>
                   {% endif %}
                 {% endfor %}
                 </div>
               </div>
             {% endfor %}
+            <div class="col-md-6 col-lg-4 mb-4">
+              <div class="card text-center">
+                <div class="col-md-12 col-lg-12" title="Add new file">
+                  <button class="btn m-3" data-toggle="modal" data-target="#addNewFileModal"><i class="fa fa-6x fa-plus"></i></button>
+                </div>
+              </div>
+            </div>
+            
           {% else %}
           <div class="col-md-12">
             <p>No Files Available</p>
           </div>
+          <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card text-center">
+              <div class="col-md-12 col-lg-12" title="Add new file">
+                <button class="btn m-3" data-toggle="modal" data-target="#addNewFileModal"><i class="fa fa-6x fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
         {% endif %}
       </div>
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="addNewFileModal" role="dialog">
+          <div class="modal-dialog">
+          
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title">Add new files to <i style="color:dodgerblue">{{ dir_projs.name }}</i></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              <div class="modal-body">
+                <div class="col-lg-10 col-md-offset-4">
+                  <form action="{% url 'ocrfiles' %}addNew/{{ dir_projs.id }}" method="post" class="dropzone" id="myDropzone" enctype="multipart/form-data">{% csrf_token %}
+                    <div class="form-group">
+                      <div class="col-lg-10">
+                        <div class="fallback">
+                          <input name="file" type="file" multiple />
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button id="button" type="submit" data-dismiss="modal" class="btn btn-primary">Add</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      
 
       <div class="row">
         <div class="col-md-12">
@@ -127,15 +181,39 @@
     </div>
   </section>
 
-  <script>
+  <script type="text/javascript">
   $(function(){
     $('#dir_projs_id').change(function(){
         $('#select_form').submit();
     });
   });
+
+  function DeleteFile(x){
+    var token = '{{csrf_token}}';
+    var file_id = x.id.replace("delete", "");
+    var r = confirm("Are you sure to delete?");
+    if(r == true){
+      $.ajax({ 
+            headers: { "X-CSRFToken": token },
+            url: "{% url 'ocrfiles' %}",
+            data: JSON.stringify({ type: "delete", file_id: file_id }),
+            type: 'DELETE',
+            contentType : 'application/json',
+        }).done(function(responseData) {
+            $('#fileCard'+file_id).fadeOut(700);
+            setTimeout(function(){
+              $('#fileCard'+file_id).load("{% url 'ocrfiles' %} #fileCard"+file_id)
+            }, 700);
+            console.log('Done');
+        }).fail(function() {
+            console.log('Failed');
+        });
+    }
+  }
   </script>
 {% endblock %}
 
 {% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'css/dropzone.css' %}">
   <link rel="stylesheet" href="{% static 'css/file.css' %}">
 {% endblock extrastyle %}

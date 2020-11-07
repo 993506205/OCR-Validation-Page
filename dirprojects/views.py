@@ -35,10 +35,10 @@ def prj_create(request):
                     #create project
                     create_ocrfiles(files, username, pk)
                     dir_projs = DirProject.objects.filter(pk=pk)
-                    context = {
-                        'dir_projs': dir_projs,
-                        'type_choices': type_choices
-                    }
+                    # context = {
+                    #     'dir_projs': dir_projs,
+                    #     'type_choices': type_choices
+                    # }
                     messages.success(request, 'The project was created successfully!')
                     return JsonResponse({
                         'success': True,

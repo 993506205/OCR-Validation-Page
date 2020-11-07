@@ -13,7 +13,7 @@
 <p class="text-center h4 mb-4 p-2">Create a new Directory Project</p>
 
 <div class="container">
-  <form class="form-text" action={% url 'createnew' %} method="post" id="frmTarget" enctype="multipart/form-data"> {% csrf_token %}
+  <form class="form-text" action="{% url 'createnew' %}" method="post" id="frmTarget" enctype="multipart/form-data"> {% csrf_token %}
     <div class="form-group">
       <div class="col-lg-10">
         {{ form.name|as_crispy_field }}
@@ -27,7 +27,7 @@
   </form>
 
   <div class="col-lg-10 col-md-offset-4">
-    <form action={% url 'createnew' %} method="post" class="dropzone" id="myDropzone" enctype="multipart/form-data">{% csrf_token %}
+    <form action="{% url 'createnew' %}" method="post" class="dropzone" id="myDropzone" enctype="multipart/form-data">{% csrf_token %}
       <div class="form-group">
         <div class="col-lg-10">
           <div class="fallback">
@@ -40,7 +40,6 @@
 
   <div class="form-group">
     <div class="col-lg-10" style="margin: 20px 0;">
-      <p id="redirect" style="display:none" value="{% url 'index' %}"></p>
       <button id="button" type="submit" class="btn btn-primary">Create</button>
       </div>
   </div>

@@ -16,9 +16,10 @@ from . import emptyDirClean
 
 # insert files properties into db
 def create_ocrfiles(file_list, username, pk):
+    now = datetime.now()
     # Change date format for db
     current = datetime.strptime(
-        datetime.now().strftime("%Y-%m-%d"), "%Y-%m-%d").date()
+        now.strftime("%Y-%m-%d"), "%Y-%m-%d").date()
     Ocr_save_img = OcrConvertedImage()
     Ocr_save_file = Ocrfiles()
 
@@ -40,6 +41,22 @@ def create_ocrfiles(file_list, username, pk):
             # Ocr_save_file = Ocrfiles.objects.filter(
                 # file_name=f_name).first()
             try:
+                Ocr_save_file.scanned_file.save(
+                    f_name, File(f))
+                new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_Scanned_files", dir_name, dir_id, f_name)
+                os.makedirs(os.path.join(settings.MEDIA_ROOT, "Ocr_Scanned_files", dir_name, dir_id), exist_ok=True)
+                os.rename(Ocr_save_file.scanned_file.path, new_path)
+                Ocr_save_file = Ocrfiles(id=Ocr_save_file.id, file_name=f_name, file_extension=f_ext, file_size=f_size, upload_date=current,scanned_file_url=str(os.path.join("Ocr_Scanned_files", dir_name, dir_id, f_name)), scanned_file=new_path, dir_project=dirproject_obj)
+                # Ocr_save_file.scanned_file.name = os.path.join("Ocr_Scanned_files", dir_name, dir_id, f_name)
+                Ocr_save_file.save()
+            except Exception as e:
+                print(str(e))
+        else:
+            try:
+                f_name = f_name.split('.')[0] + now.strftime("%Y%m%d%H%M%S") + "." + f_ext
+                Ocr_save_file, created = Ocrfiles.objects.get_or_create(
+                    file_name=f_name,
+                    dir_project=dirproject_obj,)
                 Ocr_save_file.scanned_file.save(
                     f_name, File(f))
                 new_path = os.path.join(settings.MEDIA_ROOT, "Ocr_Scanned_files", dir_name, dir_id, f_name)
