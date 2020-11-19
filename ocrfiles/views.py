@@ -154,8 +154,8 @@ def validation(request, ocr_id, page_number):
 def deleteFile(request, file_id):
     try:
         file_delete = get_object_or_404(Ocrfiles, id=file_id)
-        converted_file_delete = get_object_or_404(OcrConvertedImage, ocrfiles=file_delete)
-        converted_file_delete.delete()
+        #converted_file_delete = get_object_or_404(OcrConvertedImage, ocrfiles=file_delete)
+        #converted_file_delete.delete()
         file_delete.delete()
 
         # clean empty dirs

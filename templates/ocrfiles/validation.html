@@ -40,10 +40,10 @@
                   {% endif %}
               </map>
             </div>
-            <div class="card-block px-3">
-              <h4 class="card-title text-center" style="margin-left: 20px;">Validation</h4>
+            <div class="card-body px-3">
+              <h4 class="card-title text-center" style="margin-left: 10px;">Validation</h4>
               <div class="wrapper">
-              <div class="scrollbar scrollbar-primary" id="scrollbar">
+              <div class="scrollbar scrollbar-primary " id="scrollbar">
                 <ul class="list-group list-group-flush">
                   {% if validation_text %}
                     {% for text in validation_text %}
@@ -56,7 +56,7 @@
               </div>
             </div>
             </div>
-            <div class="float-right" title="Copy all to clipboard">
+            <div class="float-right" style="position: relative;" title="Copy all to clipboard">
               <button onclick="CopyAll()" class="btn btn-outline-info"></i> Copy All</button>
             </div>
           </div>
@@ -112,8 +112,15 @@ function CopyAll(){
 
 function mapMouseClick(x){
   var id = x.id.replace("area", "");
+  var scrolltop = $(document).scrollTop();
 
+  $(document). on ( 'scroll.unable' ,function (e) {
+         $(document).scrollTop(scrolltop);
+  });
   $('#text' + id).trigger("focus");
+  setTimeout(()=>{
+    $(document).unbind( "scroll.unable" );
+  },100);
 }
 
 $(document).ready(function(){
@@ -142,10 +149,10 @@ function coordsTransIn(x){
   var realH = myimg.height;
   var realW = myimg.width;
   var cardW = 700 - realW;
-  var cardH = realH - 25;
+  var cardH = realH - 50;
   var result;
   document.getElementById('scrollbar').style.height = cardH + "px";
-  document.getElementById('scrollbar').style.width = cardW + "px";
+  document.getElementById('scrollbar').style.width = "180px";
 
   {% for text in validation_text %}
     if({{ text.id }} == x.id.replace("text", "")){
@@ -154,10 +161,9 @@ function coordsTransIn(x){
       var endX = {{ text.endX }} * realW;
       var endY = {{ text.endY }} * realH;
       result = startX + "," + startY + "," + endX + "," + endY;
-      console.log(result);  
     }
   {% endfor %}
-  x.setAttribute("style", "background-color: red; opacity: 0.6; border-radius: 3px");
+  x.setAttribute("style", "background-color: red; opacity: 0.6; border-radius: 3px;");
   document.getElementById("myArea").setAttribute("coords",result);
   var data = {};
   $('#myArea').mouseover();

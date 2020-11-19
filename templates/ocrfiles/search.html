@@ -69,7 +69,10 @@
         <!-- Listing 1 -->
         {% if ocr_files %}
           {% for ocr_file in ocr_files %}
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-md-6 col-lg-4 mb-4" id="fileCard{{ ocr_file.id }}">
+              <div class="float-right" title="Delete the file">
+                <button onclick="DeleteFile(this)" id="delete{{ ocr_file.id }}" class="btn mr-1 mb-1"><i class="fa fa-trash"></i></button>
+              </div>
               <div class="card listing-preview">
               {% for conv_image in converted_image %}
                 {% if conv_image.ocrfiles == ocr_file %}
@@ -81,6 +84,7 @@
                           {% endif %}
                         </a>
                     </div>
+                    <hr/>
                       <a href="{% url 'ocrfiles' %}{{ ocr_file.id }}/{{ conv_image.page_number }} ">
                       <i class="listing-heading text-center">{{ ocr_file.file_name }}
                       {% if conv_image.page_number != 1 %}
@@ -141,4 +145,42 @@
     </div>
   </section>
 
+  <div style="width: 50px; display: none; position: fixed; margin: auto; overflow: hidden; height: 50px;padding-bottom: 10px; border-radius: 7px; box-shadow: 0 5px 15px #000000; top: 50%; margin: 0px 0px 0px 50%;" id="processAjax">
+
+    <img src="{% static 'img/loading.gif' %}" alt="loading" style="width: 50px; height: 50px;"/>
+  </div>
+
+  <script type="text/javascript">
+    $(window).on("beforeunload", function(e) {
+    $("#processAjax").show();
+  });
+
+  function DeleteFile(x){
+    var token = '{{csrf_token}}';
+    var file_id = x.id.replace("delete", "");
+    var r = confirm("Are you sure to delete?");
+    if(r == true){
+      $.ajax({ 
+            headers: { "X-CSRFToken": token },
+            url: "{% url 'ocrfiles' %}",
+            data: JSON.stringify({ type: "delete", file_id: file_id }),
+            type: 'DELETE',
+            contentType : 'application/json',
+        }).done(function(responseData) {
+            $('#fileCard'+file_id).fadeOut(700);
+            setTimeout(function(){
+              $('#fileCard'+file_id).load("{% url 'search' %} #fileCard"+file_id)
+            }, 700);
+            console.log('Done');
+        }).fail(function() {
+            console.log('Failed');
+        });
+    }
+  }
+  </script>
+
   {% endblock content %}
+
+  {% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'css/file.css' %}">
+{% endblock extrastyle %}
