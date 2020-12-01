@@ -7,6 +7,6 @@ PyMuPDF==1.16.18
 Pillow==7.1.2
 imutils==0.5.3
 numpy==1.18.4
-opencv-python==4.2.0.34
+opencv-python==4.4.0.40
 pytesseract==0.3.4
 sqlparse==0.2.4
